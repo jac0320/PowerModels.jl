@@ -3,7 +3,7 @@
 export
     GenericPowerModel,
     setdata, setsolver, solve,
-    run_generic_model, build_generic_model, solve_generic_model,
+    run_generic_model, build_generic_model, build_congestion_model, solve_generic_model,
     ids, ref, var, ext
 
 ""
@@ -141,6 +141,13 @@ end
 ""
 function build_generic_model(file::String,  model_constructor, post_method; kwargs...)
     data = PowerModels.parse_file(file)
+    return build_generic_model(data, model_constructor, post_method; kwargs...)
+end
+
+""
+function build_congestion_model(file::String,  model_constructor, post_method; congestion=0, kwargs...)
+    data = PowerModels.parse_file(file)
+    congest(data, (100-congestion)/100)
     return build_generic_model(data, model_constructor, post_method; kwargs...)
 end
 
@@ -367,5 +374,3 @@ function buspair_parameters(arcs_from, branches, buses)
 
     return buspairs
 end
-
-

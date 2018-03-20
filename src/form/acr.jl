@@ -13,7 +13,7 @@ export
 const ACRPowerModel = GenericPowerModel{StandardACRForm}
 
 "default rectangular AC constructor"
-ACRPowerModel(data::Dict{String,Any}; kwargs...) = 
+ACRPowerModel(data::Dict{String,Any}; kwargs...) =
     GenericPowerModel(data, StandardACRForm; kwargs...)
 
 
@@ -30,8 +30,8 @@ function constraint_voltage{T <: AbstractACRForm}(pm::GenericPowerModel{T}, n::I
     vi = pm.var[:nw][n][:vi]
 
     for (i,bus) in pm.ref[:nw][n][:bus]
-        @constraint(pm.model, bus["vmin"]^2 <= (vr[i]^2 + vi[i]^2))
-        @constraint(pm.model, bus["vmax"]^2 >= (vr[i]^2 + vi[i]^2))
+        @NLconstraint(pm.model, bus["vmin"]^2 <= (vr[i]^2 + vi[i]^2))
+        @NLconstraint(pm.model, bus["vmax"]^2 >= (vr[i]^2 + vi[i]^2))
     end
 
     # does not seem to improve convergence
@@ -144,7 +144,7 @@ function add_bus_voltage_setpoint{T <: AbstractACRForm}(sol, pm::GenericPowerMod
         try
             vr = getvalue(var(pm, :vr)[idx])
             vi = getvalue(var(pm, :vi)[idx])
-            
+
             vm = sqrt(vr^2 + vi^2)
             sol_item["vm"] = vm
 
@@ -162,4 +162,3 @@ function add_bus_voltage_setpoint{T <: AbstractACRForm}(sol, pm::GenericPowerMod
         end
     end
 end
-
